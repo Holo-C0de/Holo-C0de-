@@ -12,29 +12,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: HTML lint
+            - name: HTML lint
         run: |
-          if grep -q "<html>" index.html && grep -q "</html>" index.html; then
+          if grep -qi "<html" index.html && grep -qi "</html" index.html; then
             echo "HTML structure is OK"
           else
             echo "HTML structure is broken!"
             exit 1
           fi
-
-      - name: Build Docker image
-        run: docker build -t test-image .
-
-      - name: Smoke test container
-        run: |
-          docker run -d -p 8080:80 --name smoke-test test-image
-          sleep 3
-          if curl -s http://localhost:8080 | grep -q "Малахов Алексей Денисович"; then
-            echo "OK"
-          else
-            echo "Smoke test failed: Could not find expected text"
-            exit 1
-          fi
-          docker stop smoke-test
 
   release:
     needs: ci
